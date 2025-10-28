@@ -59,7 +59,18 @@ Visit the live app: [https://snuushco.github.io/brainrot-me/](https://snuushco.g
 
 ## Deployment
 
-This app is automatically deployed to GitHub Pages using GitHub Actions. The deployment workflow runs on every push to the main branch.
+### Option 1: Vercel (Recommended for API functionality)
+
+1. Sign up/login at [vercel.com](https://vercel.com)
+2. Click "Add New Project" and import your GitHub repository
+3. Add environment variable: `GEMINI_API_KEY` with your Gemini API key
+4. Deploy!
+
+The app will be live at: `https://your-project.vercel.app`
+
+### Option 2: GitHub Pages
+
+This app is automatically deployed to GitHub Pages using GitHub Actions. Note: API functionality requires Vercel deployment.
 
 ## License
 
