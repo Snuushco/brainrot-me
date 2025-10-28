@@ -36,7 +36,11 @@ export const generateBrainrotImage = async (
     
       clearTimeout(timeoutId);
 
-      console.log('API response status:', response.status);
+      console.log('API response status:', response.status, response.statusText);
+      
+      const responseClone = response.clone();
+      const text = await responseClone.text();
+      console.log('API response body (first 500 chars):', text.substring(0, 500));
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
