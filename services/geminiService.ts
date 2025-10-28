@@ -1,12 +1,13 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const API_KEY = process.env.API_KEY;
+// Get API key from environment variable (injected at build time)
+const API_KEY = import.meta.env.API_KEY || (typeof window !== 'undefined' && (window as any).GEMINI_API_KEY);
 
 if (!API_KEY) {
-  throw new Error("API_KEY environment variable is not set");
+  console.error("API_KEY is not set. The app will not be able to generate images.");
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 export const generateBrainrotImage = async (
   base64ImageData: string,
@@ -15,6 +16,10 @@ export const generateBrainrotImage = async (
   promptTemplate: string,
   defaultMergeObject: string
 ): Promise<string> => {
+  if (!ai) {
+    throw new Error("API key is not configured. Please check your environment variables.");
+  }
+
   try {
     const objectToMergeWith = (mergeObject && mergeObject.trim() !== '')
       ? mergeObject.trim()
