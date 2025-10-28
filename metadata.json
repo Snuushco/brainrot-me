@@ -1,0 +1,5 @@
+{
+  "name": "Brainrot Generator",
+  "description": "Upload a photo and provide a prompt to transform it into a 'Brainrot' style image using the Gemini API. See your original and AI-generated images side-by-side.",
+  "requestFramePermissions": []
+}
