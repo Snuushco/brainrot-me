@@ -1,6 +1,6 @@
 // Vercel serverless function to proxy Gemini API calls
 export const config = {
-  runtime: 'nodejs20',
+  runtime: 'nodejs',
 };
 
 export default async function handler(req: any) {
