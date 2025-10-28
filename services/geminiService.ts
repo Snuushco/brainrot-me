@@ -38,17 +38,14 @@ export const generateBrainrotImage = async (
 
       console.log('API response status:', response.status, response.statusText);
       
-      const responseClone = response.clone();
-      const text = await responseClone.text();
-      console.log('API response body (first 500 chars):', text.substring(0, 500));
-      
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('API Error:', errorData);
-        throw new Error(errorData.error || "error.generationFailed");
+        const errorText = await response.text();
+        console.error('API Error response:', errorText.substring(0, 500));
+        throw new Error("error.generationFailed");
       }
 
       const data = await response.json();
+      console.log('API response data keys:', Object.keys(data));
       
       if (!data.image) {
         throw new Error("error.noImageGenerated");
