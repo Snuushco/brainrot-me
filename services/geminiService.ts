@@ -7,10 +7,10 @@ export const generateBrainrotImage = async (
   defaultMergeObject: string
 ): Promise<string> => {
   try {
-    // Determine the API endpoint
+    // Determine the API endpoint dynamically
     const apiUrl = import.meta.env.DEV 
       ? '/api/gemini'
-      : 'https://brainrot-me.vercel.app/api/gemini';
+      : `${window.location.origin}/api/gemini`;
     
     console.log('Calling API at:', apiUrl);
     
