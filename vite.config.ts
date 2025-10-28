@@ -6,6 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
+      base: '/brainrot-me/',
       server: {
         port: 3000,
         host: '0.0.0.0',
@@ -22,19 +23,20 @@ export default defineConfig(({ mode }) => {
             theme_color: '#101010',
             background_color: '#101010',
             display: 'standalone',
+            start_url: '/brainrot-me/',
             icons: [
               {
-                src: '/icon-192x192.png',
+                src: './icon-192x192.png',
                 sizes: '192x192',
                 type: 'image/png'
               },
               {
-                src: '/icon-512x512.png',
+                src: './icon-512x512.png',
                 sizes: '512x512',
                 type: 'image/png'
               },
               {
-                src: '/icon-512x512.png',
+                src: './icon-512x512.png',
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'any maskable'
