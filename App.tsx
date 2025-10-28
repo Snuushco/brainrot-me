@@ -29,20 +29,24 @@ function App() {
   }, []);
 
   const handleGenerate = async () => {
+    console.log('=== handleGenerate called ===');
     if (!originalImage) {
+      console.log('No original image');
       setError(t('error.uploadFirst'));
       return;
     }
     if (!translations['gemini.prompt.base']) {
-        // Translations not loaded yet, prevent running
+        console.log('Translations not loaded yet');
         return;
     }
     
+    console.log('Starting generation...');
     setIsLoading(true);
     setError(null);
     setGeneratedImage(null);
 
     try {
+      console.log('Calling generateBrainrotImage...');
       const result = await generateBrainrotImage(
         originalImage.base64, 
         originalImage.mimeType, 
@@ -50,13 +54,15 @@ function App() {
         t('gemini.prompt.base'),
         t('gemini.prompt.defaultObject')
       );
+      console.log('Generation successful!');
       setGeneratedImage(result);
     } catch (err) {
-      console.error(err);
+      console.error('=== ERROR in handleGenerate ===', err);
       const errorMessage = (err instanceof Error && err.message) ? t(err.message) : t('error.unknown');
       setError(errorMessage);
     } finally {
       setIsLoading(false);
+      console.log('=== handleGenerate finished ===');
     }
   };
 
