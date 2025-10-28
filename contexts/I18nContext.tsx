@@ -1,4 +1,6 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import enTranslations from '../locales/en.json';
+import nlTranslations from '../locales/nl.json';
 
 // Define the shape of the context
 interface I18nContextType {
@@ -14,10 +16,16 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 // Available languages
 const supportedLanguages = ['en', 'nl'];
 
+// Translation mappings
+const translationFiles: Record<string, Record<string, string>> = {
+  en: enTranslations,
+  nl: nlTranslations,
+};
+
 // Provider component
 export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState('en');
-  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [translations, setTranslations] = useState<Record<string, string>>(translationFiles.en);
 
   useEffect(() => {
     // Detect browser language or get from local storage
@@ -25,37 +33,13 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const browserLang = navigator.language.split('-')[0];
     const initialLang = savedLang || (supportedLanguages.includes(browserLang) ? browserLang : 'en');
     setLanguageState(initialLang);
+    setTranslations(translationFiles[initialLang] || translationFiles.en);
   }, []);
 
   useEffect(() => {
-    // Load translations when language changes
-    const fetchTranslations = async () => {
-      try {
-        const response = await fetch(`/locales/${language}.json`);
-        if (!response.ok) {
-            // Fallback to English if the language file is not found
-            console.warn(`Translation file for '${language}' not found, falling back to 'en'.`);
-            const fallbackResponse = await fetch(`/locales/en.json`);
-            const data = await fallbackResponse.json();
-            setTranslations(data);
-            return;
-        }
-        const data = await response.json();
-        setTranslations(data);
-      } catch (error) {
-        console.error('Failed to load translations:', error);
-        // Fallback to English on error
-        try {
-            const fallbackResponse = await fetch(`/locales/en.json`);
-            const data = await fallbackResponse.json();
-            setTranslations(data);
-        } catch(e) {
-            console.error('Failed to load fallback translations', e);
-        }
-      }
-    };
-
-    fetchTranslations();
+    // Update translations when language changes
+    const selectedTranslations = translationFiles[language] || translationFiles.en;
+    setTranslations(selectedTranslations);
   }, [language]);
 
   const setLanguage = (lang: string) => {
