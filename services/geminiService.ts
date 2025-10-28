@@ -1,14 +1,4 @@
-import { GoogleGenAI, Modality } from "@google/genai";
-
-// Get API key from environment variable (injected at build time)
-const API_KEY = import.meta.env.API_KEY || (typeof window !== 'undefined' && (window as any).GEMINI_API_KEY);
-
-if (!API_KEY) {
-  console.error("API_KEY is not set. The app will not be able to generate images.");
-}
-
-const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
-
+// Call the serverless API endpoint instead of directly calling Gemini
 export const generateBrainrotImage = async (
   base64ImageData: string,
   mimeType: string,
@@ -16,47 +6,39 @@ export const generateBrainrotImage = async (
   promptTemplate: string,
   defaultMergeObject: string
 ): Promise<string> => {
-  if (!ai) {
-    throw new Error("API key is not configured. Please check your environment variables.");
-  }
-
   try {
-    const objectToMergeWith = (mergeObject && mergeObject.trim() !== '')
-      ? mergeObject.trim()
-      : defaultMergeObject;
-
-    const finalPrompt = promptTemplate.replace('{OBJECT}', objectToMergeWith);
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
-      contents: {
-        parts: [
-          {
-            inlineData: {
-              data: base64ImageData,
-              mimeType: mimeType,
-            },
-          },
-          {
-            text: finalPrompt,
-          },
-        ],
+    // Determine the API endpoint
+    const apiUrl = import.meta.env.DEV 
+      ? '/api/gemini'
+      : 'https://brainrot-me.vercel.app/api/gemini';
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      config: {
-        responseModalities: [Modality.IMAGE],
-        temperature: 0.9,
-      },
+      body: JSON.stringify({
+        base64ImageData,
+        mimeType,
+        mergeObject,
+        promptTemplate,
+        defaultMergeObject,
+      }),
     });
 
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) {
-        const generatedMimeType = part.inlineData.mimeType;
-        const generatedBase64 = part.inlineData.data;
-        return `data:${generatedMimeType};base64,${generatedBase64}`;
-      }
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('API Error:', errorData);
+      throw new Error(errorData.error || "error.generationFailed");
     }
 
-    throw new Error("error.noImageGenerated");
+    const data = await response.json();
+    
+    if (!data.image) {
+      throw new Error("error.noImageGenerated");
+    }
+
+    return data.image;
   } catch (error) {
     console.error("Error calling Gemini API:", error);
     if (error instanceof Error && error.message === "error.noImageGenerated") {
