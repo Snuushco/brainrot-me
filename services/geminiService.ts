@@ -12,6 +12,8 @@ export const generateBrainrotImage = async (
       ? '/api/gemini'
       : 'https://brainrot-me.vercel.app/api/gemini';
     
+    console.log('Calling API at:', apiUrl);
+    
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -26,6 +28,8 @@ export const generateBrainrotImage = async (
       }),
     });
 
+    console.log('API response status:', response.status);
+    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('API Error:', errorData);

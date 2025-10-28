@@ -4,6 +4,8 @@ export const config = {
 };
 
 export default async function handler(req: any) {
+  console.log('API called with method:', req.method);
+  
   if (req.method !== 'POST') {
     return {
       statusCode: 405,
@@ -23,6 +25,8 @@ export default async function handler(req: any) {
         body: JSON.stringify({ error: 'API key not configured' }),
       };
     }
+
+    console.log('API key found, processing request...');
 
     const { base64ImageData, mimeType, mergeObject, promptTemplate, defaultMergeObject } = req.body;
 
@@ -77,6 +81,7 @@ export default async function handler(req: any) {
     }
 
     const result = await apiResponse.json();
+    console.log('Gemini API response received:', JSON.stringify(result).substring(0, 500));
 
     // Extract image data from response
     const candidates = result.candidates;
