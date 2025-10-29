@@ -16,7 +16,10 @@ export const generateBrainrotImage = async (
     
     // Create an abort controller for timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+    const timeoutId = setTimeout(() => {
+      console.error('Request timeout after 90 seconds');
+      controller.abort();
+    }, 90000); // 90 second timeout
     
     try {
       const response = await fetch(apiUrl, {

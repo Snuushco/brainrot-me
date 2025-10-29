@@ -36,6 +36,8 @@ export default async function handler(req: any) {
 
     const finalPrompt = promptTemplate.replace('{OBJECT}', objectToMergeWith);
 
+    console.log('Calling Gemini API with model: gemini-2.0-flash-exp');
+    
     // Call Gemini API directly via REST
     const apiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`,
@@ -66,6 +68,8 @@ export default async function handler(req: any) {
         }),
       }
     );
+    
+    console.log('Gemini API response status:', apiResponse.status);
 
     if (!apiResponse.ok) {
       const errorText = await apiResponse.text();
